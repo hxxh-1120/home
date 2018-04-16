@@ -49,39 +49,85 @@ $("#container").fullpage({
         }
     }
 });
-let canvasobj=document.querySelectorAll("canvas");
-function all(canvasObj,max,color){
-    let cobj=canvasObj.getContext("2d");
-    cobj.textAlign="center";
-    cobj.textBaseline="middle";
-    cobj.font="20px 微软雅黑";
-    cobj.lineWidth=20;
-    cobj.lineCap="round";
-    cobj.strokeStyle="#f66";
-    cobj.strokeStyle=color;
-    cobj.fillStyle="#fff";
-    let n=0;
-    function fn(){
-        n++;
-        if(n<max){
-            requestAnimationFrame(fn);
+//轮播图
+/*banner*/
+//轮播图
+{
+    var banner=document.querySelectorAll(".banner .ban-img li");
+    var btn=document.querySelectorAll(".circle ul li");
+    var left=document.querySelector(".left");
+    var right=document.querySelector(".right");
+    var box=document.querySelector(".banner");
+
+    btn.forEach(function(ele,index){
+        ele.onclick = function () {
+            for(var i=0;i<banner.length;i++){
+                banner[i].classList.remove("active");
+                btn[i].classList.remove("active");
+            }
+            banner[index].classList.add("active");
+            btn[index].classList.add("active");
+             n=index;
+        };
+    });
+    n=0;
+    function bannerFn(bir="r") {
+        if(bir==="r"){
+            n++;
+        }else if(bir="l"){
+            n--;
         }
-        let angel=2*Math.PI*n/100-Math.PI/2;
-        cobj.save();
-        cobj.shadowColor="#fff";
-        cobj.shadowBlur="10";
-        cobj.clearRect(0,0,300,300);
-        cobj.beginPath();
-        cobj.arc(150,150,80,-Math.PI/2,angel);
-        cobj.stroke();
-        cobj.restore();
-        cobj.fillText(n+"%",150,150);
+        if(n==banner.length){
+            n=0;
+        }
+        if(n===-1){
+            n=banner.length-1;
+        }
+        for(var i=0;i<banner.length;i++){
+            banner[i].classList.remove("active");
+            btn[i].classList.remove("active");
+        }
+        banner[n].classList.add("active");
+        btn[n].classList.add("active");
+        box.onmouseover=function () {
+            clearInterval(st);
+        }
+        box.onmouseout=function(){
+            st=setInterval(bannerFn,3000);
+        }
     }
-    fn();
+    var st=setInterval(bannerFn,3000);
+    box.onmouseover=function(){
+        clearInterval(st);
+    }
+    box.onmouseout=function(){
+        st=setInterval(bannerFn,3000);
+    }
+    //解决点击事件的bug
+    var flag=true;
+
+    //左右点击事件
+     right.onclick=function(){
+
+        if(flag){
+            flag=false;
+            bannerFn();
+        }
+    }
+    left.onclick=function(){
+
+        if(flag){
+            flag=false;
+            bannerFn("l");
+        }
+    }
+    banner.forEach(function(ele,index){
+        ele.addEventListener("transitionend",function(){
+            flag=true;
+        })
+    })
+
 }
-all(canvasobj[0],90);
-all(canvasobj[1],85,"#6f6");
-all(canvasobj[2],75,"#66f");
 //项目
 $(".next").click(function(){
     $(".scene ul").transition({rotateY:"-=60"})
